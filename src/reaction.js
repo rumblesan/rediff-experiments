@@ -1,6 +1,7 @@
 class Reaction {
-  constructor({ columns, rows, killRate, feedRate }) {
+  constructor({ columns, rows, killRate, feedRate, laplace }) {
     this.config = {
+      laplace,
       killRate,
       feedRate,
       columns,
@@ -9,10 +10,8 @@ class Reaction {
   }
 
   run(cells) {
-    let maxA = 0;
-    let minA = 10;
-    let maxB = 0;
-    let minB = 10;
+    let max = 0;
+    let min = 10;
     const { feedRate, killRate } = this.config;
     const newCells = {};
     for (var x = 0; x < this.config.columns; x = x + 1) {
@@ -22,21 +21,21 @@ class Reaction {
         var b = this.cellValue(cells, 'b', x, y);
         var newA =
           this.laplacian(cells, 'a', x, y) - a * b * b + feedRate * (1 - a);
-        if (newA > maxA) {
-          maxA = newA;
+        if (newA > max) {
+          max = newA;
         }
-        if (newA < minA) {
-          minA = newA;
+        if (newA < min) {
+          min = newA;
         }
         var newB =
           this.laplacian(cells, 'b', x, y) +
           a * b * b -
           a * (killRate + feedRate);
-        if (newB > maxB) {
-          maxB = newB;
+        if (newB > max) {
+          max = newB;
         }
-        if (newB < minB) {
-          minB = newB;
+        if (newB < min) {
+          min = newB;
         }
         newCells[x][y] = {
           a: newA,
@@ -44,12 +43,11 @@ class Reaction {
         };
       }
     }
-    const scalarA = maxA - minA;
-    const scalarB = maxB - minB;
+    const scalar = max - min;
     for (var x = 0; x < this.config.columns; x = x + 1) {
       for (var y = 0; y < this.config.rows; y = y + 1) {
-        newCells[x][y].a = (newCells[x][y].a - minA) / scalarA;
-        newCells[x][y].b = (newCells[x][y].b - minB) / scalarB;
+        newCells[x][y].a = (newCells[x][y].a - min) / scalar;
+        newCells[x][y].b = (newCells[x][y].b - min) / scalar;
       }
     }
     return newCells;
@@ -61,15 +59,22 @@ class Reaction {
 
   laplacian(cells, key, x, y) {
     let out = 0;
-    out += this.cellValue(cells, key, x - 1, y - 1) * 0.05;
-    out += this.cellValue(cells, key, x, y - 1) * 0.2;
-    out += this.cellValue(cells, key, x + 1, y - 1) * 0.05;
-    out += this.cellValue(cells, key, x - 1, y) * 0.2;
-    out += this.cellValue(cells, key, x, y) * -1;
-    out += this.cellValue(cells, key, x + 1, y) * 0.2;
-    out += this.cellValue(cells, key, x - 1, y + 1) * 0.05;
-    out += this.cellValue(cells, key, x, y + 1) * 0.2;
-    out += this.cellValue(cells, key, x + 1, y + 1) * 0.05;
+    out +=
+      this.cellValue(cells, key, x - 1, y - 1) *
+      this.config.laplace['-1']['-1'];
+    out +=
+      this.cellValue(cells, key, x, y - 1) * this.config.laplace['0']['-1'];
+    out +=
+      this.cellValue(cells, key, x + 1, y - 1) * this.config.laplace['1']['-1'];
+    out +=
+      this.cellValue(cells, key, x - 1, y) * this.config.laplace['-1']['0'];
+    out += this.cellValue(cells, key, x, y) * this.config.laplace['0']['0'];
+    out += this.cellValue(cells, key, x + 1, y) * this.config.laplace['1']['0'];
+    out +=
+      this.cellValue(cells, key, x - 1, y + 1) * this.config.laplace['-1']['1'];
+    out += this.cellValue(cells, key, x, y + 1) * this.config.laplace['0']['1'];
+    out +=
+      this.cellValue(cells, key, x + 1, y + 1) * this.config.laplace['1']['1'];
     return out;
   }
 
