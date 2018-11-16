@@ -1,5 +1,5 @@
 class Field {
-  constructor(canvasEl, columns, rows, cellSize) {
+  constructor(canvasEl, { columns, rows, cellSize }) {
     this.config = {
       cellSize,
     };

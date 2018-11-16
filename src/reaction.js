@@ -1,8 +1,8 @@
 class Reaction {
-  constructor(columns, rows) {
+  constructor({ columns, rows, killRate, feedRate }) {
     this.config = {
-      kill: 0.1,
-      feed: 0.1,
+      killRate,
+      feedRate,
       columns,
       rows,
     };
@@ -13,7 +13,7 @@ class Reaction {
     let minA = 10;
     let maxB = 0;
     let minB = 10;
-    const { feed, kill } = this.config;
+    const { feedRate, killRate } = this.config;
     const newCells = {};
     for (var x = 0; x < this.config.columns; x = x + 1) {
       newCells[x] = {};
@@ -21,7 +21,7 @@ class Reaction {
         var a = this.cellValue(cells, 'a', x, y);
         var b = this.cellValue(cells, 'b', x, y);
         var newA =
-          this.laplacian(cells, 'a', x, y) - a * b * b + feed * (1 - a);
+          this.laplacian(cells, 'a', x, y) - a * b * b + feedRate * (1 - a);
         if (newA > maxA) {
           maxA = newA;
         }
@@ -29,7 +29,9 @@ class Reaction {
           minA = newA;
         }
         var newB =
-          this.laplacian(cells, 'b', x, y) + a * b * b - a * (kill + feed);
+          this.laplacian(cells, 'b', x, y) +
+          a * b * b -
+          a * (killRate + feedRate);
         if (newB > maxB) {
           maxB = newB;
         }

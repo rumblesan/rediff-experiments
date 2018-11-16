@@ -1,6 +1,8 @@
 class Simulation {
   constructor(canvasEl) {
     this.config = {
+      killRate: 0.1,
+      feedRate: 0.1,
       rows: 160,
       columns: 160,
       cellSize: 5,
@@ -12,14 +14,9 @@ class Simulation {
       cells: {},
     };
 
-    this.grid = new Field(
-      canvasEl,
-      this.config.columns,
-      this.config.rows,
-      this.config.cellSize
-    );
+    this.grid = new Field(canvasEl, this.config);
 
-    this.reaction = new Reaction(this.config.columns, this.config.rows);
+    this.reaction = new Reaction(this.config);
 
     for (var x = 0; x < this.config.columns; x = x + 1) {
       this.state.cells[x] = {};
