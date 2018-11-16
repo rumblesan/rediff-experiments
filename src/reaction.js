@@ -72,6 +72,24 @@ class Reaction {
   }
 
   cellValue(cells, key, x, y) {
+    if (!cells[x]) {
+      if (x < 0) {
+        x += this.config.columns;
+      } else if (x >= this.config.columns) {
+        x -= this.config.columns;
+      } else {
+        return 0;
+      }
+    }
+    if (!cells[x][y]) {
+      if (y < 0) {
+        y += this.config.rows;
+      } else if (y >= this.config.rows) {
+        y -= this.config.rows;
+      } else {
+        return 0;
+      }
+    }
     if (cells[x] && cells[x][y] && cells[x][y][key]) {
       return cells[x][y][key];
     }
