@@ -1,29 +1,12 @@
-const BasicLaplace = function() {
-  return {
-    '-1': { '-1': 0.05, '0': 0.2, '1': 0.05 },
-    '0': { '-1': 0.2, '0': -1, '1': 0.2 },
-    '1': { '-1': 0.05, '0': 0.2, '1': 0.05 },
-  };
-};
-
-const LeftLaplace = function() {
-  return {
-    '-1': { '-1': 0.5, '0': 0.2, '1': 0.075 },
-    '0': { '-1': 0.2, '0': -1, '1': 0.2 },
-    '1': { '-1': 0.25, '0': 0.2, '1': 0.05 },
-  };
-};
-
 class Simulation {
   constructor(canvasEl) {
     this.config = {
       killRate: 0.0649,
-      laplace: BasicLaplace(),
       feedRate: 0.0367,
       width: 200,
       height: 200,
       scaling: 3,
-      generationsPerSecond: 10,
+      generationsPerSecond: 15,
     };
 
     this.state = {

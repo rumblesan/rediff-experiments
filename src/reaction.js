@@ -1,7 +1,6 @@
 class Reaction {
-  constructor({ width, height, killRate, feedRate, laplace }) {
+  constructor({ width, height, killRate, feedRate }) {
     this.config = {
-      laplace,
       killRate,
       feedRate,
       width,
@@ -85,27 +84,15 @@ class Reaction {
 
   laplacian(key, x, y) {
     let out = 0;
-    out +=
-      this.state[key].main.getCell(x - 1, y - 1) *
-      this.config.laplace['-1']['-1'];
-    out +=
-      this.state[key].main.getCell(x, y - 1) * this.config.laplace['0']['-1'];
-    out +=
-      this.state[key].main.getCell(x + 1, y - 1) *
-      this.config.laplace['1']['-1'];
-    out +=
-      this.state[key].main.getCell(x - 1, y) * this.config.laplace['-1']['0'];
-    out += this.state[key].main.getCell(x, y) * this.config.laplace['0']['0'];
-    out +=
-      this.state[key].main.getCell(x + 1, y) * this.config.laplace['1']['0'];
-    out +=
-      this.state[key].main.getCell(x - 1, y + 1) *
-      this.config.laplace['-1']['1'];
-    out +=
-      this.state[key].main.getCell(x, y + 1) * this.config.laplace['0']['1'];
-    out +=
-      this.state[key].main.getCell(x + 1, y + 1) *
-      this.config.laplace['1']['1'];
+    out += this.state[key].main.getCell(x - 1, y - 1) * 0.05;
+    out += this.state[key].main.getCell(x + 0, y - 1) * 0.2;
+    out += this.state[key].main.getCell(x + 1, y - 1) * 0.05;
+    out += this.state[key].main.getCell(x - 1, y + 0) * 0.2;
+    out += this.state[key].main.getCell(x + 0, y + 0) * -1;
+    out += this.state[key].main.getCell(x + 1, y + 0) * 0.2;
+    out += this.state[key].main.getCell(x - 1, y + 1) * 0.05;
+    out += this.state[key].main.getCell(x + 0, y + 1) * 0.2;
+    out += this.state[key].main.getCell(x + 1, y + 1) * 0.05;
     return out;
   }
 }
