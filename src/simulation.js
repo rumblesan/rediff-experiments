@@ -3,9 +3,9 @@ class Simulation {
     this.config = {
       killRate: 0.0649,
       feedRate: 0.0367,
-      width: 200,
-      height: 200,
-      scaling: 3,
+      width: 300,
+      height: 300,
+      scaling: 2,
       generationsPerSecond: 15,
     };
 
@@ -24,15 +24,15 @@ class Simulation {
     const sim = this;
     sim.state.tprev = Date.now();
     const t = 1000 / this.config.generationsPerSecond;
-    const run = function() {
-      const start = Date.now();
+    const run = function(prevT) {
       sim.draw();
-      sim.update();
-      const tdiff = Date.now() - start;
-      setTimeout(run, t - tdiff);
+      sim.update(prevT);
+      const now = Date.now();
+      const tdiff = now - prevT;
+      setTimeout(run, t - tdiff, now);
     };
 
-    run();
+    run(Date.now());
   }
 
   togglePause() {
@@ -49,14 +49,13 @@ class Simulation {
     console.log('fps', this.state.fps);
   }
 
-  update() {
+  update(prevT) {
     if (this.state.running) {
       this.reaction.run();
 
       const now = Date.now();
-      const tdiff = now - sim.state.tprev;
-      this.state.tprev = now;
-      this.state.fps = 1000 / tdiff;
+      const tdiff = now - prevT;
+      this.state.fps = (1000 / (now - prevT)).toFixed(2);
     } else {
       this.state.fps = 0;
     }
