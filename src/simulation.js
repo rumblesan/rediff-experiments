@@ -20,32 +20,21 @@ class Simulation {
       killRate: 0.0649,
       laplace: BasicLaplace(),
       feedRate: 0.0367,
-      rows: 160,
-      columns: 160,
-      cellSize: 5,
+      width: 200,
+      height: 200,
+      scaling: 3,
       generationsPerSecond: 10,
     };
 
     this.state = {
       running: false,
-      cells: {},
       tprev: 0,
       fps: 0,
     };
 
-    this.grid = new Field(canvasEl, this.config);
+    this.canvas = new Canvas(canvasEl, this.config);
 
     this.reaction = new Reaction(this.config);
-
-    for (var x = 0; x < this.config.columns; x = x + 1) {
-      this.state.cells[x] = {};
-      for (var y = 0; y < this.config.rows; y = y + 1) {
-        this.state.cells[x][y] = {
-          a: 0,
-          b: 0,
-        };
-      }
-    }
   }
 
   start() {
@@ -53,18 +42,11 @@ class Simulation {
     sim.state.tprev = Date.now();
     const t = 1000 / this.config.generationsPerSecond;
     const run = function() {
+      const start = Date.now();
       sim.draw();
-      if (sim.state.running) {
-        sim.update();
-
-        const now = Date.now();
-        const tdiff = now - sim.state.tprev;
-        sim.state.tprev = now;
-        sim.state.fps = 1000 / tdiff;
-      } else {
-        sim.state.fps = 0;
-      }
-      setTimeout(run, t);
+      sim.update();
+      const tdiff = Date.now() - start;
+      setTimeout(run, t - tdiff);
     };
 
     run();
@@ -75,26 +57,25 @@ class Simulation {
   }
 
   randomise() {
-    for (var x = 0; x < this.config.columns; x = x + 1) {
-      for (var y = 0; y < this.config.rows; y = y + 1) {
-        this.state.cells[x][y] = {
-          a: 1,
-          b: Math.random(),
-        };
-      }
-    }
+    this.reaction.randomise();
   }
 
   draw() {
-    for (var x = 0; x < this.config.columns; x = x + 1) {
-      for (var y = 0; y < this.config.rows; y = y + 1) {
-        this.grid.drawCell(x, y, this.state.cells[x][y]);
-      }
-    }
+    const cells = this.reaction.getCells();
+    this.canvas.draw(cells.a);
     console.log('fps', this.state.fps);
   }
 
   update() {
-    this.state.cells = this.reaction.run(this.state.cells);
+    if (this.state.running) {
+      this.reaction.run();
+
+      const now = Date.now();
+      const tdiff = now - sim.state.tprev;
+      this.state.tprev = now;
+      this.state.fps = 1000 / tdiff;
+    } else {
+      this.state.fps = 0;
+    }
   }
 }

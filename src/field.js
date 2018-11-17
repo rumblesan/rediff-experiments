@@ -1,25 +1,33 @@
 class Field {
-  constructor(canvasEl, { columns, rows, cellSize }) {
-    this.config = {
-      cellSize,
-    };
-
-    canvasEl.width = columns * cellSize;
-    canvasEl.height = rows * cellSize;
-
-    this.ctx = canvas.getContext('2d');
+  constructor({ width, height }) {
+    this.width = width;
+    this.height = height;
+    this.data = new Float32Array(width * height);
   }
 
-  drawCell(x, y, cell) {
-    this.ctx.fillStyle = this.genColour(cell.a);
-    const x1 = x * this.config.cellSize;
-    const x2 = (x + 1) * this.config.cellSize;
-    const y1 = y * this.config.cellSize;
-    const y2 = (y + 1) * this.config.cellSize;
-    this.ctx.fillRect(x1, y1, x2, y2);
+  set(i, v) {
+    this.data[i] = v;
   }
 
-  genColour(value) {
-    return `hsl(${value * 360},100%,50%)`;
+  get(i) {
+    return this.data[i];
+  }
+
+  setCell(x, y, v) {
+    this.data[x * this.width + y] = v;
+  }
+
+  getCell(x, y) {
+    if (x < 0) {
+      x += this.width;
+    } else if (x >= this.width) {
+      x -= this.width;
+    }
+    if (y < 0) {
+      y += this.height;
+    } else if (y >= this.height) {
+      y -= this.height;
+    }
+    return this.data[x * this.height + y];
   }
 }
