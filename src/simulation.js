@@ -1,8 +1,10 @@
 class Simulation {
   constructor(canvasEl) {
     this.config = {
-      killRate: 0.0649,
-      feedRate: 0.0367,
+      feedRate: 0.05,
+      killRate: 0.062,
+      diffusionRateA: 0.2097,
+      diffusionRateB: 0.105,
       width: 300,
       height: 300,
       scaling: 2,

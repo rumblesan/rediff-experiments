@@ -1,8 +1,17 @@
 class Reaction {
-  constructor({ width, height, killRate, feedRate }) {
+  constructor({
+    width,
+    height,
+    killRate,
+    feedRate,
+    diffusionRateA,
+    diffusionRateB,
+  }) {
     this.config = {
       killRate,
       feedRate,
+      diffusionRateA,
+      diffusionRateB,
       width,
       height,
     };
@@ -22,9 +31,11 @@ class Reaction {
   randomise() {
     const len = this.config.width * this.config.height;
     for (let i = 0; i < len; i += 1) {
-      this.state.a.main.set(i, Math.random());
+      this.state.a.main.set(i, 1);
       this.state.a.work.set(i, 0);
-      this.state.b.main.set(i, Math.random());
+      if (Math.random() > 0.999) {
+        this.state.b.main.set(i, Math.random());
+      }
       this.state.b.work.set(i, 0);
     }
   }
@@ -39,13 +50,16 @@ class Reaction {
   run() {
     let max = 0;
     let min = 10;
+    const diffA = this.config.diffusionRateA;
+    const diffB = this.config.diffusionRateB;
     const { feedRate, killRate } = this.config;
     for (var x = 0; x < this.config.width; x = x + 1) {
       for (var y = 0; y < this.config.height; y = y + 1) {
         var a = this.state.a.main.getCell(x, y);
         var b = this.state.b.main.getCell(x, y);
 
-        var newA = this.laplacian('a', x, y) - a * b * b + feedRate * (1 - a);
+        var newA =
+          diffA * this.laplacian('a', x, y) - a * b * b + feedRate * (1 - a);
         if (newA > max) {
           max = newA;
         }
@@ -53,7 +67,9 @@ class Reaction {
           min = newA;
         }
         var newB =
-          this.laplacian('b', x, y) + a * b * b - a * (killRate + feedRate);
+          diffB * this.laplacian('b', x, y) +
+          a * b * b -
+          a * (killRate + feedRate);
         if (newB > max) {
           max = newB;
         }
